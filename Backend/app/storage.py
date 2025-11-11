@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import List, Tuple
 import tempfile
 
-STORAGE_BACKEND = os.getenv("STORAGE_BACKEND", "local").lower()
+STORAGE_BACKEND = os.getenv("STORAGE_BACKEND", "azure").lower()
 
 # --- Local backend ---
 class LocalStorage:

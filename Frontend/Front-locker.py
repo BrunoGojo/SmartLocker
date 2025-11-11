@@ -27,7 +27,7 @@ import traceback
 
 # ---------- CONFIGURAÇÕES ----------
 # IMPORTANTE: altere API_URL para o IP/host correto da sua API enquanto não usar domínio
-API_URL = "http://IP_DA_SUA_RASPBERRY:8000"  # ex: "http://192.168.1.50:8000"
+API_URL = "https://smartlocktests-a5c9bxa6gqewehcj.brazilsouth-01.azurewebsites.net"  # ex: "http://192.168.1.50:8000"
 ADMIN_TOKEN = "b77d74d1a7f4f83fcb134b4d8a09fdcd0a4b4921b739e84de3d6a29e43e1cfb3"
 
 USE_GPIO = True  # True se for usar o pino GPIO para solenoide
@@ -533,7 +533,7 @@ class KioskApp:
     def admin_login_popup(self):
         login_win = tk.Toplevel(self.root)
         login_win.title("Login do Administrador")
-        login_win.geometry("420x320")
+        login_win.geometry("420x360")
         login_win.configure(bg="#222")
         login_win.transient(self.root)
         login_win.grab_set()
