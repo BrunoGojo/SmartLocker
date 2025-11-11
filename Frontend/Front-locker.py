@@ -187,7 +187,10 @@ class KioskApp:
         controls_frame = tk.Frame(self.root, bg="#222", width=380)
         controls_frame.pack(side=tk.RIGHT, fill=tk.Y, padx=8, pady=8)
 
-        self.canvas = tk.Label(preview_frame, bg="black")
+        # Define tamanho fixo da área de preview
+        self.preview_width = 640
+        self.preview_height = 480
+        self.canvas = tk.Label(preview_frame, bg="black", width=self.preview_width, height=self.preview_height)
         self.canvas.pack(fill=tk.BOTH, expand=True)
 
         font_title = ("Helvetica", 18, "bold")
@@ -200,7 +203,6 @@ class KioskApp:
         self.name_entry.pack(pady=(0,8), ipadx=6, ipady=8)
         # dispara teclado virtual quando campo recebe foco
         self.name_entry.bind("<FocusIn>", lambda e: show_keyboard())
-        self.name_entry.bind("<FocusOut>", lambda e: hide_keyboard())
 
         btn_frame = tk.Frame(controls_frame, bg="#222")
         btn_frame.pack(pady=(4,12))
@@ -266,38 +268,43 @@ class KioskApp:
             frame = None
 
         if ret and frame is not None:
-            # Converte BGR para RGB
+            # Converte BGR -> RGB
             try:
                 frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             except Exception:
                 pass
 
-            # Obtém dimensões e redimensiona mantendo aspecto corretamente
+            # Define tamanho do canvas (com fallback)
+            canvas_width = self.canvas.winfo_width()
+            canvas_height = self.canvas.winfo_height()
+
+            # Se o Tkinter ainda não calculou o tamanho, define um padrão fixo
+            if canvas_width < 100 or canvas_height < 100:
+                canvas_width = 640
+                canvas_height = 480
+
+            # Redimensiona proporcionalmente
             try:
                 height, width = frame.shape[:2]
-                canvas_width = max(self.canvas.winfo_width(), 1)  # evita 0
-                canvas_height = max(self.canvas.winfo_height(), 1)  # evita 0
                 ratio = min(canvas_width / width, canvas_height / height)
                 new_width = max(int(width * ratio), 1)
                 new_height = max(int(height * ratio), 1)
                 frame = cv2.resize(frame, (new_width, new_height))
-            except Exception:
-                # se algo falhar no resize, ignoramos e mostramos tamanho original
-                pass
+            except Exception as e:
+                print("Erro ao redimensionar:", e)
 
-            # Converte para formato Tkinter
+            # Converte para Tkinter
             try:
                 img = Image.fromarray(frame)
                 imgtk = ImageTk.PhotoImage(image=img)
-                # Mantém referência e atualiza imagem
                 self.canvas.imgtk = imgtk
                 self.canvas.configure(image=imgtk)
             except Exception as e:
-                # Não travar o loop caso falhe conversão imagem->tk
                 print("Erro ao atualizar preview:", e)
 
-        # Agenda próxima atualização
+        # Atualiza a cada 30ms
         self.root.after(30, self.update_frame)
+
 
     def capture_image(self):
         if not self.admin_authenticated:
