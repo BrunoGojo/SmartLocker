@@ -7,3 +7,4 @@ numpy==1.26.0
 boto3==1.26.152
 opencv-contrib-python
 azure-storage-blob==12.19.1
+adafruit-circuitpython-fingerprint pyserial
